@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block page_title %}Login{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 520px; margin: 0 auto;">
+  <h3>Admin Login</h3>
+
+  {% if error %}
+    <p style="color: #ff6b6b; margin-top: 0.75rem;">{{ error }}</p>
+  {% endif %}
+
+  <form method="POST" class="form-card">
+    <div class="form-row">
+      <label>Username</label>
+      <input type="text" name="username" required>
+    </div>
+
+    <div class="form-row">
+      <label>Password</label>
+      <input type="password" name="password" required>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn primary">Log In</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

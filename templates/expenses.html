@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+Expenses
+{% endblock %}
+
+{% block content %}
+
+<div class="card" style="display: flex; flex-direction: column;">
+  <h3 style="text-align: center;">Add Expense +</h3>
+
+  <form method="POST" enctype="multipart/form-data" class="form-card" style="max-width: none; width: 100%; box-sizing: border-box;">
+    <div class="form-row">
+      <label>Vendor</label>
+      <input type="text" name="vendor" required>
+    </div>
+
+    <div class="form-row">
+      <label>Date</label>
+      <input type="date" id="expense_date" name="expense_date" required>
+    </div>
+
+    <div class="form-row">
+      <label>Amount</label>
+      <input type="number" step="0.01" name="amount" required>
+    </div>
+
+    <div class="form-row">
+      <label>Category (optional)</label>
+      <input type="text" name="category">
+    </div>
+
+    <div class="form-row">
+      <label>Notes (optional)</label>
+      <textarea name="notes" rows="2"></textarea>
+    </div>
+
+    <div class="form-row">
+      <label>Receipt files (jpg/png/pdf)</label>
+      <input type="file" name="files" multiple>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn primary">Save Expense</button>
+    </div>
+  </form>
+</div>
+
+<br>
+
+<div class="card">
+  <h3>Expense History</h3>
+
+  {% if expenses %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Vendor</th>
+          <th>Category</th>
+          <th>Amount</th>
+          <th>Notes</th>
+          <th>Files</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for e in expenses %}
+        <tr>
+          <td>{{ e['expense_date'] }}</td>
+          <td>{{ e['vendor'] }}</td>
+          <td>{{ e['category'] or '-' }}</td>
+          <td>${{ "%.2f"|format(e['amount']) }}</td>
+          <td>{{ e['notes'] or '-' }}</td>
+          <td>
+            {% if e['files'] and e['files']|length > 0 %}
+              {% for f in e['files'] %}
+                <a class="receipt-icon"
+                   href="{{ url_for('expense_file_view', file_id=f['id']) }}"
+                   target="_blank" rel="noopener"
+                   title="{{ f['original_filename'] }}">
+                  <i class="material-icons">attach_file</i>
+                </a>
+              {% endfor %}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No expenses yet.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

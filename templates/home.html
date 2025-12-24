@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>Residents & Balances</h3>
+
+{% if residents %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Balance</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for r in residents %}
+        <tr onclick="window.location='{{ url_for('resident_detail', resident_id=r['id']) }}'">
+            <td>{{ r['full_name'] }}</td>
+            <td>
+                ${{ "%.2f"|format(r['balance']) }}
+            </td>
+            <td>{{ r['status'] }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No residents yet. Click “Add Resident” to get started.</p>
+{% endif %}
+
+{% endblock %}

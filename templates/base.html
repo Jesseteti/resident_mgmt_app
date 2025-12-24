@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sommers' Sobriety</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"><!-- CSS -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"><!-- Google Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"><!-- Date Picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css"> <!-- Date Picker Theme -->
+</head>
+<body>
+
+<div class="app-shell">
+    <aside class="navbar">
+        <div class="navbar-header">
+            <h1>-Navigation-</h1>
+        </div>
+        <nav class="navbar-btn">
+            <!-- Home link stays simple -->
+            <a href="{{ url_for('home') }}">
+                Home
+                <i class="material-icons">home</i>
+            </a>
+            <!-- Residents dropdown group -->
+            <div class="navbar-group">
+                <button type="button" class="navbar-group-toggle">
+                    <span>Residents</span>
+                    <span class="material-icons expand-icon">expand_more</span>
+                </button>
+                <div class="navbar-subnav">
+                    <a href="{{ url_for('residents_list') }}">
+                        View All
+                        <i class="material-icons">group</i>
+                    </a>
+                    <a href="{{ url_for('residents_list') }}?open_resident_modal=1" data-open-resident-modal>
+                        Add New
+                        <i class="material-icons">person_add</i>
+                    </a>
+                </div>
+            </div>
+            <!-- finances dropdown group -->
+            <div class="navbar-group">
+                <button type="button" class="navbar-group-toggle">
+                    <span>Finances</span>
+                    <span class="material-icons expand-icon">expand_more</span>
+                </button>
+                <div class="navbar-subnav">
+                    <a href="{{ url_for('payments') }}">
+                        All Payments
+                        <i class="material-icons">currency_exchange</i>
+                    </a>
+                    <a href="{{ url_for('expenses') }}">
+                        Expenses
+                        <i class="material-icons">receipt_long</i>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </aside>
+    <main class="main-content">
+        <header class="top-bar">
+            <img src="{{ url_for('static', filename='images/ss_bannerTEST.PNG') }}">
+        </header>
+        <section class="page-body">
+            {% block content %}{% endblock %}
+        </section>
+    </main>
+</div>
+<!-- Date Picker Script -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<!-- Animations Script -->
+<script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Python/Flask
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+
+# Environments (including Virtual)
+venv/
+.venv/
+.env
+
+# PyCharm
+.idea/
+
+# Windows files
+Thumbs.db
+
+# Receipts/Expenses
+
+static/uploads/

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+Residents
+{% endblock %}
+
+{% block content %}
+
+<div class="page-body-header">
+    <p>
+        &#x2015; Resident Records <i class="material-icons">topic</i>&#x2015;
+        <BR>
+        <span>
+            **Choose a resident to see their full profile.**
+        </span>
+    </p>
+</div>
+<div class="page-body-header-btn">
+    <button type="button" class="btn primary" data-open-resident-modal>
+        + Add Resident
+    </button>
+</div>
+{% if residents %}
+<table class="data-table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Rate</th>
+            <th>Start Date</th>
+            <th>Balance</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for r in residents %}
+        <tr class="{% if r['status'] != 'Active' %}inactive-row{% endif %}" onclick="window.location='{{ url_for('resident_detail', resident_id=r['id']) }}'">
+            <td style="text-align:center; width: 28px;">
+                {% if r['status'] == 'Active' %}
+                    <span class="status-dot active"></span>
+                {% endif %}
+            </td>
+            <td>{{ r['full_name'] }}</td>
+            <td>{{ r['phone'] or '-' }}</td>
+            <td>${{ "%.2f"|format(r['rate_amount']) }} {{ r['rate_frequency'] }}</td>
+            <td>{{ r['start_date'] }}</td>
+            <td>${{ "%.2f"|format(r['balance']) }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No residents yet.</p>
+{% endif %}
+
+<!-- Add Resident Modal -->
+<div id="resident-modal" class="modal-backdrop">
+    <!-- Clickable overlay area behind the modal window -->
+    <div class="modal-overlay-click" data-close-resident-modal></div>
+
+    <div class="modal-window">
+        <div class="modal-header">
+            <h3></h3>
+            <h3>Add Resident +</h3>
+            <button type="button" class="modal-close-btn" data-close-resident-modal>
+                <i class="material-icons">close</i>
+            </button>
+        </div>
+
+        <form method="POST"
+              action="{{ url_for('residents_new') }}"
+              class="form-card">
+            <div class="form-row">
+                <label>Full Name</label>
+                <input type="text" name="full_name" required>
+            </div>
+
+            <div class="form-row">
+                <label>Phone</label>
+                <input type="text" name="phone">
+            </div>
+
+            <div class="form-row">
+                <label>Rate</label>
+                <input type="number" step="0.01" name="rate_amount" required>
+            </div>
+
+            <div class="form-row">
+                <label>Frequency</label>
+                <select name="rate_frequency" required>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label>Move-in Date</label>
+                <input type="text" id="start_date" name="start_date" required>
+            </div>
+
+            <div class="form-row">
+                <label>Notes</label>
+                <textarea name="notes" rows="3"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn primary">Save Resident</button>
+                <button type="button" class="btn secondary" data-close-resident-modal>
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if request.args.get('open_resident_modal') %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById('resident-modal');
+    if (modal) {
+        modal.classList.add('open');
+    }
+});
+</script>
+{% endif %}
+
+{% endblock %}

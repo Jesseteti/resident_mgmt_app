@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+
+{% block page_title %}
+Resident: {{ resident['full_name'] }}
+{% endblock %}
+
+{% block content %}
+
+<!-- Overview card -->
+<div class="card">
+
+    <div class="details-header">
+
+        <h3>Overview</h3>
+
+        <div class="details-header-btn">
+
+            <a class="btn secondary" href="{{ url_for('residents_list') }}">← Back</a>
+
+            <!-- Toggle Active / Inactive -->
+            {% if resident['status'] == 'Active' %}
+
+            <form action="{{ url_for('resident_set_status', resident_id=resident['id'], new_status='Inactive') }}"
+                  method="POST"
+                  style="display:inline-block; margin-left: 0.5rem;">
+                <button class="btn primary" type="submit">Set Inactive</button>
+            </form>
+
+            {% else %}
+
+            <form action="{{ url_for('resident_set_status', resident_id=resident['id'], new_status='Active') }}"
+                  method="POST"
+                  style="display:inline-block; margin-left: 0.5rem;">
+                <button class="btn secondary" type="submit">Set Active</button>
+            </form>
+
+            {% endif %}
+
+            <!-- Button to open the ledger modal -->
+            <button type="button" class="btn primary" data-open-ledger-modal style="margin-left: 0.5rem;">
+                Add Ledger Entry
+            </button>
+
+        </div>
+
+    </div>
+
+    <p><strong>Name:</strong> {{ resident['full_name'] }}</p>
+
+    <p><strong>Phone:</strong> {{ resident['phone'] or '-' }}</p>
+
+    <p><strong>Rate:</strong>
+        ${{ "%.2f"|format(resident['rate_amount']) }} / {{ resident['rate_frequency'] }}
+    </p>
+
+    <p><strong>Status:</strong> {{ resident['status'] }}</p>
+
+    <p><strong>Start Date:</strong> {{ resident['start_date'] }}</p>
+
+    <p><strong>Current Balance:</strong>
+        ${{ "%.2f"|format(balance) }}
+        {% if balance > 0 %}
+            (resident owes you)
+        {% elif balance < 0 %}
+            (credit in their favor)
+        {% else %}
+            (settled)
+        {% endif %}
+    </p>
+
+    <p><strong>Notes:</strong><br>{{ resident['notes'] or '-' }}</p>
+
+</div>
+
+<br>
+
+<!-- Ledger table -->
+<div class="card">
+
+    <h3>Payment History</h3>
+
+    {% if ledger_entries %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Description</th>
+                    <th>Receipt</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for e in ledger_entries %}
+                <tr>
+                    <td>{{ e['date'] }}</td>
+                    <td>{{ e['entry_type'] }}</td>
+                    <td>
+                      {% if e['entry_type'] == 'charge' %}
+                          +${{ "%.2f"|format(e['amount']) }}
+                      {% elif e['entry_type'] == 'payment' %}
+                          -${{ "%.2f"|format(e['amount']) }}
+                      {% else %}
+                          {{ "+" if e['amount'] > 0 else "-" }}${{ "%.2f"|format(e['amount'] | abs) }}
+                      {% endif %}
+                    </td>
+                    <td>{{ e['description'] or '-' }}</td>
+                    <td style="text-align:center;">
+                        {% if e['entry_type'] == 'payment' and e['receipt_object_path'] %}
+                            <a class="receipt-icon" title="Open receipt"
+                                href="{{ url_for('receipt_view', ledger_entry_id=e['id']) }}"
+                                target="_blank" rel="noopener">
+                                <i class="material-icons">receipt_long</i>
+                            </a>
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No ledger entries yet.</p>
+    {% endif %}
+</div>
+
+<!-- Modal for Add Ledger Entry -->
+<div id="ledger-modal" class="modal-backdrop">
+    <!-- Clickable overlay area (behind the modal window) -->
+    <div class="modal-overlay-click" data-close-ledger-modal></div>
+
+    <div class="modal-window">
+        <div class="modal-header">
+            <h3>Add Ledger Entry</h3>
+            <button type="button" class="modal-close-btn" data-close-ledger-modal>
+                <i class="material-icons">close</i>
+            </button>
+        </div>
+
+        <form method="POST"
+              action="{{ url_for('resident_ledger_add', resident_id=resident['id']) }}"
+              class="form-card">
+            <div class="form-row">
+                <label>Date</label>
+                <input type="date" name="date" required>
+            </div>
+
+            <div class="form-row">
+                <label>Type</label>
+                <select name="entry_type" required>
+                    <option value="charge">Charge (Balance +)</option>
+                    <option value="payment">Payment (Balance -)</option>
+                    <option value="adjustment">Adjustment</option>
+                </select>
+            </div>
+
+            <div class="form-row">
+                <label>Amount</label>
+                <input type="number" step="0.01" name="amount" required>
+            </div>
+
+            <div class="form-row">
+                <label>Description</label>
+                <textarea name="description" rows="2"
+                          placeholder="e.g. Weekly rent, Cash payment, Late fee"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn primary">Save Entry</button>
+                <button type="button" class="btn secondary" data-close-ledger-modal>
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

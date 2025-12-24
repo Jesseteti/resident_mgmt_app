@@ -1,0 +1,371 @@
+/* Overall layout */
+body {
+    margin: 0;
+    font-family: "arial", system-ui, sans-serif;
+    background: #1a1b19;
+    color: #BBB;
+}
+
+.app-shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* =================================================================== */
+/* ===================<  NAVIGATION  BAR  >=========================== */
+/* =================================================================== */
+
+.navbar {
+    width: 250px;
+    background: #141514;
+    padding: 24px 8px;
+    box-sizing: border-box;
+    border-right: 1px solid #333;
+}
+
+.navbar-header h1 {
+    font-size: 14px;
+    color: #444;
+    margin: 0 0 32px 0;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 8px;
+    text-decoration: underline;
+    text-underline-offset: 6px;
+}
+
+.navbar-btn a {
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: #BBB;
+    text-decoration: none;
+    padding: 5px 10px 5px 10px;
+    margin: 8px 0;
+    border-radius: 4px;
+    align-items: center;
+    transition: all 0.3s linear;
+}
+
+.navbar-btn a:hover {
+    background: #262826;
+    padding: 5px 10px 5px 18px;
+    color: #FFF;
+}
+
+.navbar-group {                                   /* dropdown container */
+    margin: 8px 0;
+}
+
+.navbar-group-toggle {                        /* toggle dropdown button */
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: left;
+    transition: all 0.3s linear;
+}
+
+.navbar-group-toggle span {                            /* dropdown text */
+    font-weight: bold;
+    color: #CCC;
+    font-size: 15px;
+}
+
+.navbar-group-toggle:hover {
+    background: #262826;
+    padding-left: 18px;
+    cursor: pointer;
+}
+
+.navbar-subnav {                                  /* dropdown animation */
+    margin-left: 15px;
+    margin-top: 4px;
+    overflow: hidden;                  /* required for height animation */
+    max-height: 0;
+    opacity: 0;
+    padding-left: 4px;
+    transition: all 0.5s ease;
+}
+
+.expand-icon {                                  /* caret icon animation */
+    font-size: 15px;
+    transition: transform 0.3s ease;
+}
+
+.navbar-group.open .expand-icon {               /* caret icon animation */
+    transform: rotate(180deg);
+}
+
+
+.navbar-subnav a {                                    /* dropdown links */
+    font-size: 15px;
+    color: #CCC;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.navbar-subnav a:hover {
+    color: #FFF;
+}
+
+.navbar-group.open .navbar-subnav {            /* when dropdown is open */
+    max-height: 300px;
+    opacity: 1;
+    padding: 4px 10px;
+}
+
+/* ==================================================================== */
+/* ===================<  MAIN CONTENT AREA  =========================== */
+/* ==================================================================== */
+
+.main-content {                                    /* content container */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-bar {                                          /* top bar for logo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #444;
+    background: #222;
+}
+
+.page-body {                     /* content container minus the top bar */
+    padding: 30px;
+}
+
+.page-body-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    letter-spacing: 3px;
+    font-size: 24px;
+}
+
+.page-body-header span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-style: italic;
+    color: #666;
+    letter-spacing: 0;
+    padding: 10px;
+}
+
+.page-body-header-btn {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    letter-spacing: 0;
+}
+
+.page-body-header .material-icons {
+    position: relative;
+    top: 4px;
+    padding-right: 6px;
+}
+
+.details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.details-header-btn {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    padding: 8px 14px;
+    border-radius: 4px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.btn.primary {
+    background: #5eb8e5;
+    color: #222;
+    float: right;
+}
+
+.btn.primary:hover {
+    background: #8ad0ff;
+}
+
+.btn.secondary {
+    background: #333;
+    color: #EEE;
+}
+
+.btn.secondary:hover {
+    background: #444;
+}
+
+/* Table */
+.data-table {
+    width: 100%;
+    position: relative;
+    top: 15px;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.data-table th, .data-table td {
+    padding: 0.6rem;
+    border-bottom: 1px solid #333;
+    text-align: left;
+}
+
+.data-table tr:hover {
+    background: #242524;
+    cursor: pointer;
+}
+
+/* Forms */
+.form-card {
+    max-width: 500px;
+    background: #222;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
+
+.form-row {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row label {
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.form-row input, .form-row select, .form-row textarea {
+    padding: 0.4rem;
+    border-radius: 4px;
+    border: 1px solid #444;
+    background: #111;
+    color: #EEE;
+}
+
+.form-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.receipt-icon {
+    color: #BBB;
+}
+
+.receipt-icon:hover {
+    color: #FFF;
+}
+
+.status-dot {                                   /* status indicator dot */
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.status-dot.active {                            /* status indicator dot */
+    background-color: #4caf50;
+}
+
+.inactive-row {                                /* status opacity change */
+  opacity: 0.4;
+}
+
+.card {                                        /* 'card' div background */
+    background: #222;
+    padding: 25px 25px 40px 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
+
+
+
+/* ==================================================================== */
+/* =====================  PAYMENT  MODAL  ============================= */
+/* ==================================================================== */
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-backdrop.open {
+    display: flex;      /* flex centers the pop-up */
+}
+
+.modal-window {
+    position: relative;
+    background: #222;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 0 18px rgba(0, 0, 0, 0.7);
+    max-width: 480px;
+    width: 90%;
+    z-index: 1001;
+}
+
+/* Header row inside the modal */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.modal-header h3 {
+    padding: 15px;
+    margin: 0;
+}
+
+/* Close button in the header */
+.modal-close-btn {
+    background: none;
+    border: none;
+    color: #EEE;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+}
+
+/* Make the clickable overlay for closing */
+.modal-overlay-click {
+    position: fixed;
+    inset: 0;
+    z-index: 1000px;
+}
+
+/* Form inside the modal: reuse your form styles but stretch full width */
+.modal-window .form-card {
+    max-width: 100%;
+    box-shadow: none;
+    padding: 0;
+}
