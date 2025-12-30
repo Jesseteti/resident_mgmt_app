@@ -1,9 +1,9 @@
-import os, uuid
+import os, uuid, re
 from dotenv import load_dotenv
 load_dotenv()
 
-from datetime import date
-from flask import Flask, render_template, request, redirect, url_for, abort
+from datetime import date, timedelta
+from flask import Flask, render_template, request, redirect, url_for, abort, session
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from auth import User, verify_password
 from pathlib import Path
@@ -19,18 +19,22 @@ from db import (
     refresh_auto_charges_for_active_residents,
     get_user_row_by_username,
     get_all_payments,
+    get_most_recent_payments,
     insert_receipt_record,
     get_expenses_with_files,
     get_receipt_by_ledger_entry_id,
     get_expense_file_by_id)
 
+ALLOWED_EXPENSE_EXTENSIONS = {"jpg", "jpeg", "png", "pdf"}
+
 app = Flask(__name__)
+
+# config
 app.config["MAX_CONTENT_LENGTH"] = 3 * 1024 * 1024  # 3 MB request limit
-
-ALLOWED_EXPENSE_EXTENSIONS = {"jpg", "jpeg", "png", "pdf"}      # for receipt uploads
-
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-change-me")
+app.permanent_session_lifetime = timedelta(hours=8)
 
+# auth
 login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)
@@ -38,6 +42,17 @@ login_manager.init_app(app)
 @login_manager.user_loader
 def load_user(user_id):
     return User.get(int(user_id))
+
+# formatting for phone numbers, had to come before the temp
+def format_phone(phone):
+    if not phone:
+        return ""
+    digits = re.sub(r"\D", "", phone)
+    if len(digits) == 10:
+        return f"({digits[0:3]}) {digits[3:6]}-{digits[6:]}"
+    return phone  # fallback if not 10 digits
+
+app.jinja_env.filters["phone"] = format_phone
 
 ##### -------------------------< ROUTES >------------------------- #####
 
@@ -55,6 +70,7 @@ def login():
             return render_template("login.html", error="Invalid login")
 
         login_user(User(row))
+        session.permanent = True
         return redirect(url_for("home"))
 
     return render_template("login.html")
@@ -68,12 +84,11 @@ def logout():
 @app.route("/")
 @login_required
 def home():
-    # Keep balances current
     refresh_auto_charges_for_active_residents()
 
-    all_residents = get_residents_with_balances()
-    residents = [r for r in all_residents if r["status"] == "Active"]
-    return render_template("home.html", residents=residents)
+    rows = get_most_recent_payments(active_only=True)
+
+    return render_template("home.html", rows=rows)
 
 @app.route("/residents")
 @login_required
@@ -152,7 +167,7 @@ def resident_detail(resident_id):
         FROM ledger_entries le
         LEFT JOIN receipts r ON r.ledger_entry_id = le.id
         WHERE le.resident_id = %s
-        ORDER BY le.entry_date ASC, le.id ASC;
+        ORDER BY le.entry_date DESC, le.id DESC;
         """,
         (resident_id,),
     )

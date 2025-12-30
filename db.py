@@ -196,6 +196,63 @@ def get_all_payments():
             """
         ).fetchall()
 
+def get_most_recent_payments(active_only: bool = True):
+
+    status_filter = "AND r.status = 'Active'" if active_only else ""
+
+    with get_db_connection() as conn:
+        return conn.execute(
+            f"""
+            SELECT
+                r.id,
+                r.full_name,
+                r.status,
+
+                -- current balance
+                COALESCE(SUM(
+                    CASE
+                        WHEN le.entry_type = 'charge' THEN le.amount
+                        WHEN le.entry_type = 'payment' THEN -le.amount
+                        WHEN le.entry_type = 'adjustment' THEN le.amount
+                        ELSE 0
+                    END
+                ), 0) AS balance,
+
+                -- most recent payment info
+                p.entry_date AS last_payment_date,
+                p.amount     AS last_payment_amount
+
+            FROM residents r
+
+            -- balance ledger join
+            LEFT JOIN ledger_entries le
+                ON le.resident_id = r.id
+
+            -- most recent payment per resident
+            LEFT JOIN LATERAL (
+                SELECT entry_date, amount
+                FROM ledger_entries
+                WHERE resident_id = r.id
+                  AND entry_type = 'payment'
+                ORDER BY entry_date DESC, id DESC
+                LIMIT 1
+            ) p ON true
+
+            WHERE 1 = 1
+            {status_filter}
+
+            GROUP BY
+                r.id,
+                r.full_name,
+                r.status,
+                p.entry_date,
+                p.amount
+
+            ORDER BY r.full_name ASC;
+            """
+        ).fetchall()
+
+
 def insert_receipt_record(
     ledger_entry_id: int,
     resident_id: int,

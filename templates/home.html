@@ -1,25 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>Residents & Balances</h3>
+<h3>- Quick Overview -</h3>
 
-{% if residents %}
+{% if rows %}
 <table class="data-table">
     <thead>
         <tr>
             <th>Name</th>
+            <th>Last Payment</th>
             <th>Balance</th>
-            <th>Status</th>
         </tr>
     </thead>
     <tbody>
-    {% for r in residents %}
-        <tr onclick="window.location='{{ url_for('resident_detail', resident_id=r['id']) }}'">
+    {% for r in rows %}
+        <tr onclick="window.location='{{ url_for('resident_detail', resident_id=r['id']) }}'"
+            style="cursor: pointer;">
+
             <td>{{ r['full_name'] }}</td>
+
             <td>
+                {% if r['last_payment_date'] %}
+                    {{ r['last_payment_date'].strftime("%m/%d/%Y") }}
+                    — ${{ "%.2f"|format(r['last_payment_amount']) }}
+                {% else %}
+                    <em>No payments yet</em>
+                {% endif %}
+            </td>
+
+            <td style="color: {% if r['balance'] > 0 %} #be4040 {% else %} #008000 {% endif %}">
                 ${{ "%.2f"|format(r['balance']) }}
             </td>
-            <td>{{ r['status'] }}</td>
+
         </tr>
     {% endfor %}
     </tbody>

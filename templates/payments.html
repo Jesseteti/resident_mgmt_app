@@ -20,9 +20,9 @@
       <tbody>
         {% for p in payments %}
           <tr>
-            <td>{{ p['entry_date'] }}</td>
+            <td>{{ p['entry_date'].strftime("%m/%d/%Y") }}</td>
             <td>{{ p['resident_name'] }}</td>
-            <td>-${{ "%.2f"|format(p['amount']) }}</td>
+            <td>${{ "%.2f"|format(p['amount']) }}</td>
             <td>{{ p['description'] or '-' }}</td>
             <td style="text-align:center;">
               {% if p['receipt_object_path'] %}

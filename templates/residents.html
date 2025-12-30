@@ -41,10 +41,20 @@ Residents
                 {% endif %}
             </td>
             <td>{{ r['full_name'] }}</td>
-            <td>{{ r['phone'] or '-' }}</td>
+            <td>{{ r['phone'] | phone or '-' }}</td>
             <td>${{ "%.2f"|format(r['rate_amount']) }} {{ r['rate_frequency'] }}</td>
-            <td>{{ r['start_date'] }}</td>
-            <td>${{ "%.2f"|format(r['balance']) }}</td>
+            <td>{{ r['start_date'].strftime("%m/%d/%Y") }}</td>
+            <td>
+                {% if r['balance'] > 0 %}
+                    <span style="color: #be4040;">
+                        ${{ "%.2f"|format(r['balance']) }}
+                    </span>
+                {% elif r['balance'] <= 0 %}
+                    <span style="color: green;">
+                        ${{ "%.2f"|format(r['balance']) }}
+                    </span>
+                {% endif %}
+            </td>
         </tr>
     {% endfor %}
     </tbody>
@@ -82,7 +92,7 @@ Residents
 
             <div class="form-row">
                 <label>Rate</label>
-                <input type="number" step="0.01" name="rate_amount" required>
+                <input type="number" step="0.01" name="rate_amount" value="170" required>
             </div>
 
             <div class="form-row">

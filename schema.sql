@@ -1,6 +1,4 @@
--- =========================
--- Residents
--- =========================
+-- ============================  RESIDENTS  ======================================
 CREATE TABLE residents (
     id SERIAL PRIMARY KEY,
     full_name TEXT NOT NULL,
@@ -12,9 +10,9 @@ CREATE TABLE residents (
     notes TEXT
 );
 
--- =========================
--- Ledger Entries
--- =========================
+-- ===========================  LEDGER  =========================================
+
+-- entries
 CREATE TABLE ledger_entries (
     id SERIAL PRIMARY KEY,
     resident_id INTEGER NOT NULL
@@ -27,11 +25,11 @@ CREATE TABLE ledger_entries (
     source TEXT
 );
 
--- Prevent duplicate auto rent charges for the same resident on the same date
+-- prevent same day/time duplicate entries
 CREATE UNIQUE INDEX uq_auto_rent_charge
 ON ledger_entries (resident_id, entry_date)
 WHERE entry_type = 'charge' AND source = 'auto_rent';
 
--- Helpful index for resident ledger page ordering/filtering
+-- index for resident ledger page
 CREATE INDEX idx_ledger_resident_date
 ON ledger_entries (resident_id, entry_date, id);
